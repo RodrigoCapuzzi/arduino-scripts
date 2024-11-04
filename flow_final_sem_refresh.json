@@ -1,0 +1,323 @@
+[
+    {
+        "id": "08b8551565aff9e8",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "f0c6dd4d8583de68",
+        "type": "serial in",
+        "z": "08b8551565aff9e8",
+        "name": "",
+        "serial": "d57a76ca5346f159",
+        "x": 160,
+        "y": 60,
+        "wires": [
+            [
+                "c618f503f7d0daf4"
+            ]
+        ]
+    },
+    {
+        "id": "a042de51ce6a6828",
+        "type": "ui_table",
+        "z": "08b8551565aff9e8",
+        "group": "943858f9e7b22fbd",
+        "name": "",
+        "order": 0,
+        "width": "8",
+        "height": "10",
+        "columns": [
+            {
+                "field": "tipo_leitura",
+                "title": "Tipo de leitura",
+                "width": "160",
+                "align": "center",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "bike_id",
+                "title": "Bike ID",
+                "width": "80",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "status",
+                "title": "Status",
+                "width": "160",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 870,
+        "y": 420,
+        "wires": [],
+        "inputLabels": [
+            "msg.payload"
+        ]
+    },
+    {
+        "id": "38c2f2c650d04f58",
+        "type": "debug",
+        "z": "08b8551565aff9e8",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "191a3cdfdb307480",
+        "type": "function",
+        "z": "08b8551565aff9e8",
+        "name": "function 1",
+        "func": "\ntry {\n    // Tentar converter o payload de string para JSON\n    //let parsedMessage = JSON.parse(msg.payload);\n\n    // Recuperar dados salvos ou iniciar um novo array\n    let tableData = flow.get(\"savedData\") || [];\n\n    // Adicionar nova entrada no início do array\n    tableData.unshift({\n        \"tipo_leitura\": msg.payload.tipo_leitura,\n        \"bike_id\": msg.payload.bike_id,\n        \"status\": msg.payload.status\n    });\n\n    // Atualizar o fluxo com os dados salvos\n    flow.set(\"savedData\", tableData);\n\n    // Enviar o conteúdo atualizado da tabela como payload\n    msg.payload = tableData;\n\n} catch (error) {\n    // Logar o erro para entender o que deu errado\n    node.error(\"Erro ao converter o payload em JSON: \" + error);\n    return null;  // Parar o fluxo caso o JSON seja inválido\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 380,
+        "wires": [
+            [
+                "a042de51ce6a6828",
+                "38c2f2c650d04f58"
+            ]
+        ]
+    },
+    {
+        "id": "8025c923f883fdb7",
+        "type": "ui_text",
+        "z": "08b8551565aff9e8",
+        "group": "05bce6116fce728b",
+        "order": 1,
+        "width": "5",
+        "height": "3",
+        "name": "",
+        "label": "Mensagem do Sensor",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 840,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "d9a27f46cd944b14",
+        "type": "function",
+        "z": "08b8551565aff9e8",
+        "name": "function 2",
+        "func": "\n// Tentar converter o payload de string para JSON\ntry {\n    //let message = JSON.parse(msg.payload);\n\n    // Criar um novo objeto com apenas as chaves desejadas\n    msg.payload = \n        \"Tipo de leitura: \" + msg.payload.tipo_leitura + \"<br>\" +\n        \"Bike ID: \" + msg.payload.bike_id + \"<br>\" +\n        \"Status: \" + msg.payload.status\n    ;\n} catch (error) {\n    // Caso ocorra um erro na conversão JSON, log o erro\n    node.error(\"Erro ao converter o payload em JSON: \" + error);\n    return null;  // Parar o fluxo caso o JSON seja inválido\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 320,
+        "wires": [
+            [
+                "8025c923f883fdb7"
+            ]
+        ]
+    },
+    {
+        "id": "8d05f67ca4fce018",
+        "type": "inject",
+        "z": "08b8551565aff9e8",
+        "name": "Limpar tabela",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 230,
+        "y": 420,
+        "wires": [
+            [
+                "936ce4e9f464cb8e"
+            ]
+        ]
+    },
+    {
+        "id": "936ce4e9f464cb8e",
+        "type": "function",
+        "z": "08b8551565aff9e8",
+        "name": "function 3",
+        "func": "// Limpar o histórico de dados\nflow.set(\"savedData\", []);\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 420,
+        "wires": [
+            [
+                "191a3cdfdb307480"
+            ]
+        ]
+    },
+    {
+        "id": "c618f503f7d0daf4",
+        "type": "mqtt out",
+        "z": "08b8551565aff9e8",
+        "name": "",
+        "topic": "leitura/rfid",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "974e815c8a18fdbd",
+        "x": 360,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "4f3e37b1eaf95875",
+        "type": "mqtt in",
+        "z": "08b8551565aff9e8",
+        "name": "",
+        "topic": "leitura/rfid",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "974e815c8a18fdbd",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 340,
+        "y": 240,
+        "wires": [
+            [
+                "191a3cdfdb307480",
+                "d9a27f46cd944b14"
+            ]
+        ]
+    },
+    {
+        "id": "d57a76ca5346f159",
+        "type": "serial-port",
+        "name": "Entrada USB-C",
+        "serialport": "/dev/tty.usbmodem1101",
+        "serialbaud": "9600",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "\\n",
+        "bin": "false",
+        "out": "char",
+        "addchar": "\\n",
+        "responsetimeout": "1000"
+    },
+    {
+        "id": "943858f9e7b22fbd",
+        "type": "ui_group",
+        "name": "Tabela",
+        "tab": "856192033fda1ef2",
+        "order": 2,
+        "disp": true,
+        "width": "10",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "05bce6116fce728b",
+        "type": "ui_group",
+        "name": "Painel",
+        "tab": "856192033fda1ef2",
+        "order": 1,
+        "disp": true,
+        "width": "7",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "974e815c8a18fdbd",
+        "type": "mqtt-broker",
+        "name": "Mosquitto",
+        "broker": "test.mosquitto.org",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "856192033fda1ef2",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
